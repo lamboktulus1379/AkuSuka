@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Repository;
 
 namespace AkuSuka.Extensions
 {
@@ -39,5 +40,10 @@ namespace AkuSuka.Extensions
             var connectionString = config["mysqlconnection:connectionString"];
             services.AddDbContext<RepositoryContext>(o => o.UseMySql(connectionString));
         }
+
+    public static void ConfigureRepositoryWrapper(this IServiceCollection services)
+    {
+      services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+    }
     }
 }

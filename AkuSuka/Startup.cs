@@ -33,7 +33,9 @@ namespace AkuSuka
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
-            services.AddControllers();
+      services.ConfigureRepositoryWrapper();
+
+      services.AddControllers();
 
             services.ConfigureMySqlContext(Configuration);
         }
