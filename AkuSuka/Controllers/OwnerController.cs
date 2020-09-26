@@ -1,4 +1,6 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
+using Entities.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -14,10 +16,13 @@ namespace AkuSuka.Controllers
     {
         private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
-        public OwnerController(ILoggerManager logger, IRepositoryWrapper repository)
+        private IMapper _mapper;
+
+        public OwnerController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper)
         {
             _logger = logger;
             _repository = repository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -29,7 +34,9 @@ namespace AkuSuka.Controllers
 
                 _logger.LogInfo($"Returned all owners from database.");
 
-                return Ok(owners);
+                var ownersResult = _mapper.Map<IEnumerable<OwnerDto>>(owners);
+
+                return Ok(ownersResult);
             }
             catch (Exception ex)
             {

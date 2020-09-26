@@ -1065,3 +1065,26 @@
 2020-09-26 15:09:28.4243 Debug FileTarget(Name=logfile): Preparing for new file '/app/bin/Debug/netcoreapp3.1/d:/Projects/Blog-AccountOwner/Project/logs/2020-09-26_logfile.txt'
 2020-09-26 15:09:28.4399 Debug Creating file appender: /app/bin/Debug/netcoreapp3.1/d:/Projects/Blog-AccountOwner/Project/logs/2020-09-26_logfile.txt
 2020-09-26 15:09:28.4520 Trace Opening /app/bin/Debug/netcoreapp3.1/d:/Projects/Blog-AccountOwner/Project/logs/2020-09-26_logfile.txt with allowFileSharedWriting=False
+2020-09-26 18:05:50.7779 Info AppDomain Shutting down. Logger closing...
+2020-09-26 18:05:50.7940 Debug Stopping file watching for path '/app' filter 'nlog.config'
+2020-09-26 18:05:50.8116 Debug Targets not configured for logger: LoggerService.LoggerManager
+2020-09-26 18:05:50.8250 Debug Closing logging configuration...
+2020-09-26 18:05:50.8371 Trace Closing File Target[logfile]
+2020-09-26 18:05:50.8491 Debug Closing target 'File Target[logfile]'.
+2020-09-26 18:05:50.8615 Trace FileTarget(Name=logfile): FinalizeFile '/app/bin/Debug/netcoreapp3.1/d:/Projects/Blog-AccountOwner/Project/logs/2020-09-26_logfile.txt, isArchiving: False'
+2020-09-26 18:05:50.8730 Debug FileAppender Closing Invalidate - /app/bin/Debug/netcoreapp3.1/d:/Projects/Blog-AccountOwner/Project/logs/2020-09-26_logfile.txt
+2020-09-26 18:05:50.8864 Debug Closed target 'File Target[logfile]'.
+2020-09-26 18:05:50.8980 Trace Closing 'd:/Projects/Blog-AccountOwner/Project/logs/${shortdate}_logfile.txt'
+2020-09-26 18:05:50.9102 Trace Closing Layout Renderer: ${literal}
+2020-09-26 18:05:50.9191 Trace Closing Layout Renderer: ${shortdate}
+2020-09-26 18:05:50.9267 Trace Closing Layout Renderer: ${literal}
+2020-09-26 18:05:50.9351 Trace Closing '${longdate} ${level:uppercase=true} ${message}'
+2020-09-26 18:05:50.9351 Trace Closing Layout Renderer: ${longdate}
+2020-09-26 18:05:50.9539 Trace Closing Layout Renderer: ${literal}
+2020-09-26 18:05:50.9626 Trace Closing Layout Renderer: ${uppercase}
+2020-09-26 18:05:50.9714 Trace Closing SimpleLayout=Layout Renderer: ${level}
+2020-09-26 18:05:50.9810 Trace Closing Layout Renderer: ${level}
+2020-09-26 18:05:50.9905 Trace Closing Layout Renderer: ${literal}
+2020-09-26 18:05:51.0003 Trace Closing Layout Renderer: ${message}
+2020-09-26 18:05:51.0118 Debug Finished closing logging configuration.
+2020-09-26 18:05:51.0210 Info Logger has been shut down.
