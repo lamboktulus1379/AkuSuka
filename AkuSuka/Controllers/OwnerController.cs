@@ -121,8 +121,6 @@ namespace AkuSuka.Controllers
                 var ownerEntity = _mapper.Map<Owner>(owner);
 
                 _repository.Owner.CreateOwner(ownerEntity);
-
-                _repository.Owner.CreateOwner(ownerEntity);
                 _repository.Save();
 
                 var createdOwner = _mapper.Map<OwnerDto>(ownerEntity);
