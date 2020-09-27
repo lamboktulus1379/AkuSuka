@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -46,7 +47,7 @@ namespace AkuSuka.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "AccountById")]
         public IActionResult GetAccountById(Guid id)
         {
             try
@@ -72,6 +73,40 @@ namespace AkuSuka.Controllers
 
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        [HttpPost]
+        public IActionResult CreateAccount([FromBody] AccountForCreationDto account)
+        {
+            try
+            {
+                if (account == null)
+                {
+                    _logger.LogError($"Account object send from client is null");
+                    return BadRequest("Account object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError($"Invalid account object send from client.");
+                    return BadRequest("Invalid model object");
+                }
+
+                var accountEntity = _mapper.Map<Account>(account);
+
+                _repository.Account.CreateAccount(accountEntity);
+                _repository.Save();
+
+                var createdAccount = _mapper.Map<AccountDto>(accountEntity);
+
+                return CreatedAtRoute("AccountById", new { id = createdAccount.Id}, createdAccount);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateAccount action: {ex.Message}");
+                return StatusCode(500, "Internal server error" + ex.Message);
+            }
+            
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,5 +10,6 @@ namespace Entities.DataTransferObjects
         public Guid Id { get; set; }
         public DateTime DateCreated { get; set; }
         public string AccountType { get; set; }
+        public Guid OwnerId { get; set; }
     }
 }

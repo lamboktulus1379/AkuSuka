@@ -10,5 +10,6 @@ namespace Contracts
 
         IEnumerable<Account> GetAllAccounts();
         Account GetAccountById(Guid accountId);
+        void CreateAccount(Account account);
     }
 }

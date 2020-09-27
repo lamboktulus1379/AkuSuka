@@ -15,6 +15,8 @@ namespace AkuSuka
             CreateMap<OwnerForCreationDto, Owner>();
 
             CreateMap<OwnerForUpdateDto, Owner>();
+
+            CreateMap<AccountForCreationDto, Account>();
         }
     }
 }

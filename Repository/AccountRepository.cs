@@ -19,6 +19,11 @@ namespace Repository
             return FindByCondition(a => a.OwnerId.Equals(ownerId)).ToList();
         }
 
+        public void CreateAccount(Account account)
+        {
+            Create(account);
+        }
+
         public Account GetAccountById(Guid accountId)
         {
             return FindByCondition(a => a.Id.Equals(accountId)).FirstOrDefault();
