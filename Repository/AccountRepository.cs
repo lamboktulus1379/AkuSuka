@@ -18,5 +18,12 @@ namespace Repository
         {
             return FindByCondition(a => a.OwnerId.Equals(ownerId)).ToList();
         }
+
+        public IEnumerable<Account> GetAllAccounts()
+        {
+            return FindAll()
+                .OrderBy(ow => ow.DateCreated)
+                .ToList();
+        }
     }
 }
