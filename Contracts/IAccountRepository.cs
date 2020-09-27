@@ -11,5 +11,7 @@ namespace Contracts
         IEnumerable<Account> GetAllAccounts();
         Account GetAccountById(Guid accountId);
         void CreateAccount(Account account);
+        void UpdateAccount(Account account);
+        void DeleteAccount(Account account);
     }
 }

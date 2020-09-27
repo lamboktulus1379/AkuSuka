@@ -24,6 +24,12 @@ namespace Repository
             Create(account);
         }
 
+
+        public void DeleteAccount(Account account)
+        {
+            Delete(account);
+        }
+
         public Account GetAccountById(Guid accountId)
         {
             return FindByCondition(a => a.Id.Equals(accountId)).FirstOrDefault();
@@ -34,6 +40,11 @@ namespace Repository
             return FindAll()
                 .OrderBy(ow => ow.DateCreated)
                 .ToList();
+        }
+
+        public void UpdateAccount(Account account)
+        {
+            Update(account);
         }
     }
 }

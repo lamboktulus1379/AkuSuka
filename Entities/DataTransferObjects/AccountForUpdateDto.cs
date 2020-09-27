@@ -8,8 +8,7 @@ namespace Entities.DataTransferObjects
 {
     public class AccountForUpdateDto
     {
-        [Required(ErrorMessage = "Owner Id is required")]
-        public Owner OwnerId { get; set; }
+        public Guid OwnerId { get; set; }
         [Required(ErrorMessage = "Date Created is required")]
         public DateTime DateCreated { get; set; }
         [Required(ErrorMessage = "Account Type is required")]        

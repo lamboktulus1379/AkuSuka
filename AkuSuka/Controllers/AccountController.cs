@@ -99,14 +99,70 @@ namespace AkuSuka.Controllers
 
                 var createdAccount = _mapper.Map<AccountDto>(accountEntity);
 
-                return CreatedAtRoute("AccountById", new { id = createdAccount.Id}, createdAccount);
+                return CreatedAtRoute("AccountById", new { id = createdAccount.Id }, createdAccount);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CreateAccount action: {ex.Message}");
                 return StatusCode(500, "Internal server error" + ex.Message);
             }
-            
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateAccount(Guid id, [FromBody] AccountForUpdateDto account)
+        {
+            try
+            {
+                if (account == null)
+                {
+                    _logger.LogError("Account object sent from client is null.");
+                    return BadRequest("Account object is null");
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid account object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var accountEntity = _repository.Account.GetAccountById(id);
+                if (accountEntity == null)
+                {
+                    _logger.LogError($"Account with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                _mapper.Map(account, accountEntity);
+                _repository.Account.UpdateAccount(accountEntity);
+                _repository.Save();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateAccount action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteAccount(Guid id)
+        {
+            try
+            {
+                var account = _repository.Account.GetAccountById(id);
+                if (account == null)
+                {
+                    _logger.LogError($"Account with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }             
+
+
+                _repository.Account.DeleteAccount(account);
+                _repository.Save();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteAccount action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
