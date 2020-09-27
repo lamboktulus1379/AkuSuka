@@ -45,5 +45,33 @@ namespace AkuSuka.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetAccountById(Guid id)
+        {
+            try
+            {
+                var account = _repository.Account.GetAccountById(id);
+
+                if (account == null)
+                {
+                    _logger.LogError($"Account with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned account with id: {id}");
+                    var accountResult = _mapper.Map<AccountDto>(account);
+
+                    return Ok(accountResult);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetAccountById action: {ex.Message}");
+
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

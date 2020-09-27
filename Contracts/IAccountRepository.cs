@@ -9,5 +9,6 @@ namespace Contracts
         IEnumerable<Account> AccountsByOwner(Guid ownerId);
 
         IEnumerable<Account> GetAllAccounts();
+        Account GetAccountById(Guid accountId);
     }
 }
