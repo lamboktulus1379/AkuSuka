@@ -4,6 +4,7 @@ using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,27 +28,28 @@ namespace AkuSuka.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllOwners()
+        public IActionResult GetOwners([FromQuery] OwnerParameters ownerParameters)
         {
-            try
+            var owners = _repository.Owner.GetOwners(ownerParameters);
+
+            var metadata = new
             {
-                var owners = _repository.Owner.GetAllOwners();
+                owners.TotalCount,
+                owners.PageSize,
+                owners.CurrentPage,
+                owners.TotalPages,
+                owners.HasNext,
+                owners.HasPrevious
+            };
 
-                _logger.LogInfo($"Returned all owners from database.");
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                var ownersResult = _mapper.Map<IEnumerable<OwnerDto>>(owners);
+            _logger.LogInfo($"Returned {owners.TotalCount} from database.");
 
-                return Ok(ownersResult);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside GetAllOwners action: {ex.Message}");
-
-                return StatusCode(500, "Internal server error");
-            }
+            return Ok(owners);
         }
 
-        [HttpGet("{id}", Name ="OwnerById")]
+        [HttpGet("{id}", Name = "OwnerById")]
         public IActionResult GetOwnerById(Guid id)
         {
             try
@@ -136,7 +138,7 @@ namespace AkuSuka.Controllers
 
 
         [HttpPut("{id}")]
-        public IActionResult UpdateOwner(Guid id, [FromBody]OwnerForUpdateDto owner)
+        public IActionResult UpdateOwner(Guid id, [FromBody] OwnerForUpdateDto owner)
         {
             try
             {

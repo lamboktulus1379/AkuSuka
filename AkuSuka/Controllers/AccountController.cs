@@ -4,6 +4,7 @@ using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,26 +26,25 @@ namespace AkuSuka.Controllers
             _repository = repository;
             _mapper = mapper;
         }
+        
+
         [HttpGet]
-        public IActionResult GetAccounts()
+        public IActionResult GetAccountsForOwner(Guid ownerId, [FromQuery] AccountParameters parameters)
         {
+            var accounts = _repository.Account.GetAccontsByOwner(ownerId, parameters);
 
-            try
+            var metadata = new
             {
-                var accounts = _repository.Account.GetAllAccounts();
-
-                _logger.LogInfo($"Returned all accounts from database.");
-
-                var accountsResult = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-
-                return Ok(accountsResult);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside GetAllAccounts action: {ex.Message}");
-
-                return StatusCode(500, "Internal server error");
-            }
+                accounts.TotalCount,
+                accounts.PageSize,
+                accounts.CurrentPage,
+                accounts.TotalPages,
+                accounts.HasNext,
+                accounts.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            _logger.LogInfo($"Returned {accounts.TotalCount} owners from database.");
+            return Ok(accounts);
         }
 
         [HttpGet("{id}", Name = "AccountById")]

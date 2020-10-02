@@ -15,11 +15,11 @@ namespace Repository
         {
         }
 
-        public IEnumerable<Owner> GetAllOwners()
+        public PagedList<Owner> GetOwners(OwnerParameters ownerParameters)
         {
-            return FindAll()
-                .OrderBy(ow => ow.Name)
-                .ToList();
+            return PagedList<Owner>.ToPagedList(FindAll()
+                .OrderBy(ow => ow.Name),
+                ownerParameters.PageNumber, ownerParameters.PageSize);
         }
 
         public Owner GetOwnerById(Guid ownerId)
