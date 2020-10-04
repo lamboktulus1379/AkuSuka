@@ -1,26 +1,28 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helpers;
 using Entities.Models;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 
 namespace Repository
 {
     public class AccountRepository : RepositoryBase<Account>, IAccountRepository
     {
-        public AccountRepository(RepositoryContext repositoryContext)
+        private ISortHelper<Account> _accountHelper;
+        public AccountRepository(RepositoryContext repositoryContext, ISortHelper<Account> accountHelper)
             : base(repositoryContext)
         {
+            _accountHelper = accountHelper;
         }
 
         public PagedList<Account> GetAccontsByOwner(Guid ownerId, AccountParameters parameters)
         {
             var accounts = FindByCondition(a => a.OwnerId.Equals(ownerId));
+            var sortedAccounts = _accountHelper.ApplySort(accounts, parameters.OrderBy);
 
-            return PagedList<Account>.ToPagedList(accounts, parameters.PageNumber, parameters.PageSize);
+            return PagedList<Account>.ToPagedList(sortedAccounts, parameters.PageNumber, parameters.PageSize);
         }
 
         public IEnumerable<Account> AccountsByOwner(Guid ownerId)

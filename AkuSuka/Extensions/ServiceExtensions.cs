@@ -1,5 +1,7 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helpers;
+using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -41,9 +43,11 @@ namespace AkuSuka.Extensions
             services.AddDbContext<RepositoryContext>(o => o.UseMySql(connectionString));
         }
 
-    public static void ConfigureRepositoryWrapper(this IServiceCollection services)
-    {
-      services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
-    }
+        public static void ConfigureRepositoryWrapper(this IServiceCollection services)
+        {
+            services.AddScoped<ISortHelper<Owner>, SortHelper<Owner>>();
+            services.AddScoped<ISortHelper<Account>, SortHelper<Account>>();
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+        }
     }
 }

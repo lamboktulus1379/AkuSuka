@@ -3,16 +3,19 @@ using Entities;
 using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using Entities.Helpers;
 
 namespace Repository
 {
     public class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
     {
-        public OwnerRepository(RepositoryContext repositoryContext)
+        private ISortHelper<Owner> _sortHelper;
+        public OwnerRepository(RepositoryContext repositoryContext, ISortHelper<Owner> sortHelper)
             : base(repositoryContext)
         {
+            _sortHelper = sortHelper;
         }
 
         public PagedList<Owner> GetOwners(OwnerParameters ownerParameters)
@@ -22,7 +25,9 @@ namespace Repository
 
             SearchByName(ref owners, ownerParameters.Name);
 
-            return PagedList<Owner>.ToPagedList(owners,
+            var sortedOwners = _sortHelper.ApplySort(owners, ownerParameters.OrderBy);
+
+            return PagedList<Owner>.ToPagedList(sortedOwners,
                 ownerParameters.PageNumber,
                 ownerParameters.PageSize);
         }
