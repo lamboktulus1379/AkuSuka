@@ -32,13 +32,22 @@ namespace AkuSuka
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureCors();
-            services.ConfigureIISIntegration();
-            services.ConfigureLoggerService();
-            services.ConfigureRepositoryWrapper();
 
-            services.AddControllers();
+            services.ConfigureIISIntegration();
+
+            services.ConfigureLoggerService();
 
             services.ConfigureMySqlContext(Configuration);
+
+            services.ConfigureRepositoryWrapper();
+
+            services.AddControllers(config =>
+            {
+                config.RespectBrowserAcceptHeader = true;
+                config.ReturnHttpNotAcceptable = true;
+            }).AddXmlDataContractSerializerFormatters()
+            .AddNewtonsoftJson();
+
             services.AddAutoMapper(typeof(Startup));
         }
 

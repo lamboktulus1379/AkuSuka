@@ -11,10 +11,12 @@ namespace Repository
     public class AccountRepository : RepositoryBase<Account>, IAccountRepository
     {
         private ISortHelper<Account> _accountHelper;
-        public AccountRepository(RepositoryContext repositoryContext, ISortHelper<Account> accountHelper)
+        private IDataShaper<Account> _dataShaper;
+        public AccountRepository(RepositoryContext repositoryContext, ISortHelper<Account> accountHelper, IDataShaper<Account> dataShaper)
             : base(repositoryContext)
         {
             _accountHelper = accountHelper;
+            _dataShaper = dataShaper;
         }
 
         public PagedList<Account> GetAccontsByOwner(Guid ownerId, AccountParameters parameters)
