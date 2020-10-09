@@ -11,8 +11,8 @@ namespace Repository
 {
 	public class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
 	{
-		private ISortHelper<Owner> _sortHelper;
-		private IDataShaper<Owner> _dataShaper;
+		private readonly ISortHelper<Owner> _sortHelper;
+		private readonly IDataShaper<Owner> _dataShaper;
 
 		public OwnerRepository(RepositoryContext repositoryContext,
 			ISortHelper<Owner> sortHelper,
@@ -23,7 +23,7 @@ namespace Repository
 			_dataShaper = dataShaper;
 		}
 
-		public PagedList<Entity> GetOwners(OwnerParameters ownerParameters)
+		public PagedList<ShapedEntity> GetOwners(OwnerParameters ownerParameters)
 		{
 			var owners = FindByCondition(o => o.DateOfBirth.Year >= ownerParameters.MinYearOfBirth &&
 										o.DateOfBirth.Year <= ownerParameters.MaxYearOfBirth);
@@ -33,7 +33,7 @@ namespace Repository
 			var sortedOwners = _sortHelper.ApplySort(owners, ownerParameters.OrderBy);
 			var shapedOwners = _dataShaper.ShapeData(sortedOwners, ownerParameters.Fields);
 
-			return PagedList<Entity>.ToPagedList(shapedOwners,
+			return PagedList<ShapedEntity>.ToPagedList(shapedOwners,
 				ownerParameters.PageNumber,
 				ownerParameters.PageSize);
 		}
@@ -49,10 +49,10 @@ namespace Repository
 			owners = owners.Where(o => o.Name.ToLower().Contains(ownerName.Trim().ToLower()));
 		}
 
-		public Entity GetOwnerById(Guid ownerId, string fields)
+		public ShapedEntity GetOwnerById(Guid ownerId, string fields)
 		{
 			var owner = FindByCondition(owner => owner.Id.Equals(ownerId))
-				.DefaultIfEmpty(new Owner())
+				//.DefaultIfEmpty(new Owner())
 				.FirstOrDefault();
 
 			return _dataShaper.ShapeData(owner, fields);
@@ -71,6 +71,8 @@ namespace Repository
 				.DefaultIfEmpty(new Owner())
 				.FirstOrDefault();
 		}
+
+		
 
 		public void CreateOwner(Owner owner)
 		{

@@ -1,13 +1,17 @@
-﻿using Contracts;
+﻿using AkuSuka.Filters;
+using Contracts;
 using Entities;
 using Entities.Helpers;
 using Entities.Models;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repository;
+using System.Linq;
 
 namespace AkuSuka.Extensions
 {
@@ -52,6 +56,27 @@ namespace AkuSuka.Extensions
             services.AddScoped<IDataShaper<Account>, DataShaper<Account>>();
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+            services.AddScoped<ValidateMediaTypeAttribute>();
+        }
+
+        public static void AddCustomMediaTypes(this IServiceCollection services)
+        {
+            services.Configure<MvcOptions>(config =>
+            {
+                var newtonSoftJsonFormatter = config.OutputFormatters.OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+                if (newtonSoftJsonFormatter != null)
+                {
+                    newtonSoftJsonFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.hateoas+json");
+                }
+
+                var xmlOutputFormatter = config.OutputFormatters.OfType<XmlDataContractSerializerOutputFormatter>()?.FirstOrDefault();
+
+                if (xmlOutputFormatter != null)
+                {
+                    xmlOutputFormatter.SupportedMediaTypes.Add("application/vnd.codemaze.hateoas+xml");
+                }
+            });
         }
     }
 }

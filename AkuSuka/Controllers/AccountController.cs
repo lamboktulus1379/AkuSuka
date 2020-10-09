@@ -4,6 +4,7 @@ using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,15 @@ namespace AkuSuka.Controllers
         private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
         private IMapper _mapper;
+        private LinkGenerator _linkGenerator;
 
-        public AccountController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper)
+        public AccountController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper,
+            LinkGenerator linkGenerator)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _linkGenerator = linkGenerator;
         }
         
 
@@ -163,6 +167,18 @@ namespace AkuSuka.Controllers
                 _logger.LogError($"Something went wrong inside DeleteAccount action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        private List<Link> CreateLinksForAccount(Guid ownerId, Guid id, string fields = "")
+        {
+            var links = new List<Link>
+            {
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetAccountsForOwner), values: new {ownerId, id, fields }),
+                "self",
+                "GET"),
+            };
+
+            return links;
         }
     }
 }

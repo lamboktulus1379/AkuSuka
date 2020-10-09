@@ -10,17 +10,17 @@ namespace Entities.Models
 {
 	public class Entity : DynamicObject, IXmlSerializable, IDictionary<string, object>
 	{
-		private readonly string _root = "Entity";
-		private readonly IDictionary<string, object> _expando = null;
+		private readonly string root = "EntityWithLinks";
+		private readonly IDictionary<string, object> expando = null;
 
 		public Entity()
 		{
-			_expando = new ExpandoObject();
+			expando = new ExpandoObject();
 		}
 
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			if (_expando.TryGetValue(binder.Name, out object value))
+			if (expando.TryGetValue(binder.Name, out object value))
 			{
 				result = value;
 				return true;
@@ -31,7 +31,7 @@ namespace Entities.Models
 
 		public override bool TrySetMember(SetMemberBinder binder, object value)
 		{
-			_expando[binder.Name] = value;
+			expando[binder.Name] = value;
 
 			return true;
 		}
@@ -43,9 +43,9 @@ namespace Entities.Models
 
 		public void ReadXml(XmlReader reader)
 		{
-			reader.ReadStartElement(_root);
+			reader.ReadStartElement(root);
 
-			while (!reader.Name.Equals(_root))
+			while (!reader.Name.Equals(root))
 			{
 				string typeContent;
 				Type underlyingType;
@@ -55,106 +55,122 @@ namespace Entities.Models
 				typeContent = reader.ReadContentAsString();
 				underlyingType = Type.GetType(typeContent);
 				reader.MoveToContent();
-				_expando[name] = reader.ReadElementContentAs(underlyingType, null);
+				expando[name] = reader.ReadElementContentAs(underlyingType, null);
 			}
 		}
 
 		public void WriteXml(XmlWriter writer)
 		{
-			foreach (var key in _expando.Keys)
+			foreach (var key in expando.Keys)
 			{
-				var value = _expando[key];
-				WriteLinksToXml(key, value, writer);
+				var value = expando[key];
+				WriteXmlElement(key, value, writer);
 			}
 		}
 
-		private void WriteLinksToXml(string key, object value, XmlWriter writer)
+		private void WriteXmlElement(string key, object value, XmlWriter writer)
 		{
 			writer.WriteStartElement(key);
-			writer.WriteString(value.ToString());
+
+			if (value.GetType() == typeof(List<Link>))
+			{
+				foreach (var val in value as List<Link>)
+				{
+					writer.WriteStartElement(nameof(Link));
+					WriteXmlElement(nameof(val.Href), val.Href, writer);
+					WriteXmlElement(nameof(val.Method), val.Method, writer);
+					WriteXmlElement(nameof(val.Rel), val.Rel, writer);
+					writer.WriteEndElement();
+				}
+			}
+			else
+			{
+				writer.WriteString(value.ToString());
+			}
+
 			writer.WriteEndElement();
 		}
 
 		public void Add(string key, object value)
 		{
-			_expando.Add(key, value);
+			expando.Add(key, value);
 		}
 
 		public bool ContainsKey(string key)
 		{
-			return _expando.ContainsKey(key);
+			return expando.ContainsKey(key);
 		}
 
 		public ICollection<string> Keys
 		{
-			get { return _expando.Keys; }
+			get { return expando.Keys; }
 		}
 
 		public bool Remove(string key)
 		{
-			return _expando.Remove(key);
+			return expando.Remove(key);
 		}
 
 		public bool TryGetValue(string key, out object value)
 		{
-			return _expando.TryGetValue(key, out value);
+			return expando.TryGetValue(key, out value);
 		}
 
 		public ICollection<object> Values
 		{
-			get { return _expando.Values; }
+			get { return expando.Values; }
 		}
 
 		public object this[string key]
 		{
 			get
 			{
-				return _expando[key];
+				return expando[key];
 			}
 			set
 			{
-				_expando[key] = value;
+				expando[key] = value;
 			}
 		}
 
 		public void Add(KeyValuePair<string, object> item)
 		{
-			_expando.Add(item);
+			expando.Add(item);
 		}
 
 		public void Clear()
 		{
-			_expando.Clear();
+			expando.Clear();
 		}
 
 		public bool Contains(KeyValuePair<string, object> item)
 		{
-			return _expando.Contains(item);
+			return expando.Contains(item);
 		}
 
 		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
 		{
-			_expando.CopyTo(array, arrayIndex);
+			expando.CopyTo(array, arrayIndex);
 		}
 
 		public int Count
 		{
-			get { return _expando.Count; }
+			get { return expando.Count; }
 		}
 
 		public bool IsReadOnly
 		{
-			get { return _expando.IsReadOnly; }
+			get { return expando.IsReadOnly; }
 		}
 
 		public bool Remove(KeyValuePair<string, object> item)
 		{
-			return _expando.Remove(item);
+			return expando.Remove(item);
 		}
 
 		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
-			return _expando.GetEnumerator();
+			return expando.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

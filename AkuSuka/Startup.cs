@@ -48,6 +48,8 @@ namespace AkuSuka
             }).AddXmlDataContractSerializerFormatters()
             .AddNewtonsoftJson();
 
+            services.AddCustomMediaTypes();
+
             services.AddAutoMapper(typeof(Startup));
         }
 
