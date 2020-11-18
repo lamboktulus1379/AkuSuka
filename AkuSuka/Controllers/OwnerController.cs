@@ -98,7 +98,7 @@ namespace AkuSuka.Controllers
         }
 
 
-        [HttpGet("{id}/account")]
+        [HttpGet("{id}/accounts")]
         public IActionResult GetOwnerWithDetails(Guid id)
         {
             try
