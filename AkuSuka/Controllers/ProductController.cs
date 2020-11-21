@@ -1,0 +1,151 @@
+﻿using AkuSuka.Filters;
+using Contracts;
+using Entities.Extensions;
+using Entities.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace AkuSuka.Controllers
+{
+    [Route("api/products")]
+    [ApiController]
+    public class ProductController : ControllerBase
+    {
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
+        private readonly LinkGenerator _linkGenerator;
+
+        public ProductController(ILoggerManager logger, IRepositoryWrapper repository, LinkGenerator linkGenerator)
+        {
+            _logger = logger;
+            _repository = repository;
+            _linkGenerator = linkGenerator;
+        }
+
+        [HttpGet]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+        public IActionResult GetProducts([FromQuery] ProductParameters productParameters)
+        {
+            var products = _repository.Product.GetProducts(productParameters);
+
+            var metadata = new
+            {
+                products.TotalCount,
+                products.PageSize,
+                products.CurrentPage,
+                products.TotalPages,
+                products.HasNext,
+                products.HasPrevious
+            };
+
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+            _logger.LogInfo($"Returned {products.TotalCount} products from database.");
+            var shapedProducts = products.Select(o => o.Entity).ToList();
+            var mediaType = (MediaTypeHeaderValue)HttpContext.Items["AcceptHeaderMediaType"];
+            if (!mediaType.SubTypeWithoutSuffix.EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return Ok(shapedProducts);
+            }
+
+            for (var index = 0; index < products.Count; index++)
+            {
+                var ownerLinks = CreateLinksForProduct(products[index].Id, productParameters.Fields);
+                shapedProducts[index].Add("Links", ownerLinks);
+            }
+            var productsWrapper = new LinkCollectionWrapper<Entity>(shapedProducts);
+            return Ok(CreateLinksForProducts(productsWrapper));
+        }
+
+        [HttpPost]
+        public IActionResult CreateProduct([FromBody] Product product)
+        {
+            if (product.IsObjectNull())
+            {
+                _logger.LogError("Product object sent from client is null.");
+                return BadRequest("Owner object is null.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid product object sent from client.");
+                return BadRequest("Invalid model object");
+            }
+
+            _repository.Product.Create(product);
+            _repository.Save();
+
+            return CreatedAtRoute("ProductById", new { id = product.Id }, product);
+        }
+
+        [HttpGet("{id}", Name = "ProductById")]
+        [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
+        public IActionResult GetProductById(Guid id, [FromQuery] string fields)
+        {
+            var product = _repository.Product.GetProductById(id, fields);
+
+            if (product.Id == Guid.Empty)
+            {
+                _logger.LogError($"Product with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+
+            var mediaType = (MediaTypeHeaderValue)HttpContext.Items["AcceptHeaderMediaType"];
+
+            if (!mediaType.SubTypeWithoutSuffix.EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _logger.LogInfo($"Returned shaped product with id: {id}");
+                return Ok(product.Entity);
+            }
+            product.Entity.Add("Links", CreateLinksForProduct(product.Id, fields));
+            return Ok(product.Entity);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteProduct(Guid id)
+        {
+            var product = _repository.Product.GetProductById(id);
+            if (product.IsEmptyObject())
+            {
+                _logger.LogError($"Product with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+            _repository.Product.DeleteProduct(product);
+            _repository.Save();
+
+            return NoContent();
+        }
+
+        private IEnumerable<Link> CreateLinksForProduct(Guid id, string fields)
+        {
+            var links = new List<Link>
+            {
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetProductById), values: new {id, fields}),
+                "self",
+                "GET"),
+                new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(DeleteProduct), values: new { id }), "self", "DELETE")
+
+            };
+
+            return links;
+        }
+
+        private LinkCollectionWrapper<Entity> CreateLinksForProducts(LinkCollectionWrapper<Entity> productsWrapper)
+        {
+            productsWrapper.Links.Add(new Link(_linkGenerator.GetUriByAction(HttpContext, nameof(GetProducts), values: new { }),
+                    "self",
+                    "GET"));
+
+            return productsWrapper;
+        }
+
+    }
+}

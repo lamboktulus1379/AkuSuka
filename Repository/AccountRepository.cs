@@ -10,8 +10,8 @@ namespace Repository
 {
     public class AccountRepository : RepositoryBase<Account>, IAccountRepository
     {
-        private ISortHelper<Account> _accountHelper;
-        private IDataShaper<Account> _dataShaper;
+        private readonly ISortHelper<Account> _accountHelper;
+        private readonly IDataShaper<Account> _dataShaper;
         public AccountRepository(RepositoryContext repositoryContext, ISortHelper<Account> accountHelper, IDataShaper<Account> dataShaper)
             : base(repositoryContext)
         {

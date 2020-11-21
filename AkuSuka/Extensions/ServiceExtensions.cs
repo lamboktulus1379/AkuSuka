@@ -66,9 +66,11 @@ namespace AkuSuka.Extensions
         {
             services.AddScoped<ISortHelper<Owner>, SortHelper<Owner>>();
             services.AddScoped<ISortHelper<Account>, SortHelper<Account>>();
+            services.AddScoped<ISortHelper<Product>, SortHelper<Product>>();
 
             services.AddScoped<IDataShaper<Owner>, DataShaper<Owner>>();
             services.AddScoped<IDataShaper<Account>, DataShaper<Account>>();
+            services.AddScoped<IDataShaper<Product>, DataShaper<Product>>();
 
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
             services.AddScoped<ValidateMediaTypeAttribute>();

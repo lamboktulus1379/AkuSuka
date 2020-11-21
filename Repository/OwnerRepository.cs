@@ -9,85 +9,85 @@ using System.Linq;
 
 namespace Repository
 {
-	public class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
-	{
-		private readonly ISortHelper<Owner> _sortHelper;
-		private readonly IDataShaper<Owner> _dataShaper;
+    public class OwnerRepository : RepositoryBase<Owner>, IOwnerRepository
+    {
+        private readonly ISortHelper<Owner> _sortHelper;
+        private readonly IDataShaper<Owner> _dataShaper;
 
-		public OwnerRepository(RepositoryContext repositoryContext,
-			ISortHelper<Owner> sortHelper,
-			IDataShaper<Owner> dataShaper)
-			: base(repositoryContext)
-		{
-			_sortHelper = sortHelper;
-			_dataShaper = dataShaper;
-		}
+        public OwnerRepository(RepositoryContext repositoryContext,
+            ISortHelper<Owner> sortHelper,
+            IDataShaper<Owner> dataShaper)
+            : base(repositoryContext)
+        {
+            _sortHelper = sortHelper;
+            _dataShaper = dataShaper;
+        }
 
-		public PagedList<ShapedEntity> GetOwners(OwnerParameters ownerParameters)
-		{
-			var owners = FindByCondition(o => o.DateOfBirth.Year >= ownerParameters.MinYearOfBirth &&
-										o.DateOfBirth.Year <= ownerParameters.MaxYearOfBirth);
+        public PagedList<ShapedEntity> GetOwners(OwnerParameters ownerParameters)
+        {
+            var owners = FindByCondition(o => o.DateOfBirth.Year >= ownerParameters.MinYearOfBirth &&
+                                        o.DateOfBirth.Year <= ownerParameters.MaxYearOfBirth);
 
-			SearchByName(ref owners, ownerParameters.Name);
+            SearchByName(ref owners, ownerParameters.Name);
 
-			var sortedOwners = _sortHelper.ApplySort(owners, ownerParameters.OrderBy);
-			var shapedOwners = _dataShaper.ShapeData(sortedOwners, ownerParameters.Fields);
+            var sortedOwners = _sortHelper.ApplySort(owners, ownerParameters.OrderBy);
+            var shapedOwners = _dataShaper.ShapeData(sortedOwners, ownerParameters.Fields);
 
-			return PagedList<ShapedEntity>.ToPagedList(shapedOwners,
-				ownerParameters.PageNumber,
-				ownerParameters.PageSize);
-		}
+            return PagedList<ShapedEntity>.ToPagedList(shapedOwners,
+                ownerParameters.PageNumber,
+                ownerParameters.PageSize);
+        }
 
-		private void SearchByName(ref IQueryable<Owner> owners, string ownerName)
-		{
-			if (!owners.Any() || string.IsNullOrWhiteSpace(ownerName))
-				return;
+        private void SearchByName(ref IQueryable<Owner> owners, string ownerName)
+        {
+            if (!owners.Any() || string.IsNullOrWhiteSpace(ownerName))
+                return;
 
-			if (string.IsNullOrEmpty(ownerName))
-				return;
+            if (string.IsNullOrEmpty(ownerName))
+                return;
 
-			owners = owners.Where(o => o.Name.ToLower().Contains(ownerName.Trim().ToLower()));
-		}
+            owners = owners.Where(o => o.Name.ToLower().Contains(ownerName.Trim().ToLower()));
+        }
 
-		public ShapedEntity GetOwnerById(Guid ownerId, string fields)
-		{
-			var owner = FindByCondition(owner => owner.Id.Equals(ownerId))
-				//.DefaultIfEmpty(new Owner())
-				.FirstOrDefault();
+        public ShapedEntity GetOwnerById(Guid ownerId, string fields)
+        {
+            var owner = FindByCondition(owner => owner.Id.Equals(ownerId))
+                //.DefaultIfEmpty(new Owner())
+                .FirstOrDefault();
 
-			return _dataShaper.ShapeData(owner, fields);
-		}
+            return _dataShaper.ShapeData(owner, fields);
+        }
 
-		public Owner GetOwnerWithDetails(Guid ownerId)
-		{
-			return FindByCondition(owner => owner.Id.Equals(ownerId))
-				.Include(ac => ac.Accounts)
-				.FirstOrDefault();
-		}
+        public Owner GetOwnerWithDetails(Guid ownerId)
+        {
+            return FindByCondition(owner => owner.Id.Equals(ownerId))
+                .Include(ac => ac.Accounts)
+                .FirstOrDefault();
+        }
 
-		public Owner GetOwnerById(Guid ownerId)
-		{
-			return FindByCondition(owner => owner.Id.Equals(ownerId))
-				.DefaultIfEmpty(new Owner())
-				.FirstOrDefault();
-		}
+        public Owner GetOwnerById(Guid ownerId)
+        {
+            return FindByCondition(owner => owner.Id.Equals(ownerId))
+                .DefaultIfEmpty(new Owner())
+                .FirstOrDefault();
+        }
 
-		
 
-		public void CreateOwner(Owner owner)
-		{
-			Create(owner);
-		}
 
-		public void UpdateOwner(Owner dbOwner, Owner owner)
-		{
-			dbOwner.Map(owner);
-			Update(dbOwner);
-		}
+        public void CreateOwner(Owner owner)
+        {
+            Create(owner);
+        }
 
-		public void DeleteOwner(Owner owner)
-		{
-			Delete(owner);
-		}
-	}
+        public void UpdateOwner(Owner dbOwner, Owner owner)
+        {
+            dbOwner.Map(owner);
+            Update(dbOwner);
+        }
+
+        public void DeleteOwner(Owner owner)
+        {
+            Delete(owner);
+        }
+    }
 }

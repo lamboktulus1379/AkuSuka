@@ -62,7 +62,7 @@ namespace AkuSuka.Controllers
             {
                 return Ok(shapedOwners);
             }
-            for (var index = 0; index < owners.Count(); index++)
+            for (var index = 0; index < owners.Count; index++)
             {
                 var ownerLinks = CreateLinksForOwner(owners[index].Id, ownerParameters.Fields);
                 shapedOwners[index].Add("Links", ownerLinks);
