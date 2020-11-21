@@ -13,5 +13,6 @@ namespace Contracts
         ShapedEntity GetProductById(Guid productId, string fields);
         Product GetProductById(Guid productId);
         void DeleteProduct(Product product);
+        void UpdateProduct(Product dbProduct, Product product);
     }
 }

@@ -58,8 +58,8 @@ namespace AkuSuka.Controllers
 
             for (var index = 0; index < products.Count; index++)
             {
-                var ownerLinks = CreateLinksForProduct(products[index].Id, productParameters.Fields);
-                shapedProducts[index].Add("Links", ownerLinks);
+                var productLinks = CreateLinksForProduct(products[index].Id, productParameters.Fields);
+                shapedProducts[index].Add("Links", productLinks);
             }
             var productsWrapper = new LinkCollectionWrapper<Entity>(shapedProducts);
             return Ok(CreateLinksForProducts(productsWrapper));
@@ -71,7 +71,7 @@ namespace AkuSuka.Controllers
             if (product.IsObjectNull())
             {
                 _logger.LogError("Product object sent from client is null.");
-                return BadRequest("Owner object is null.");
+                return BadRequest("Product object is null.");
             }
 
             if (!ModelState.IsValid)
@@ -119,6 +119,34 @@ namespace AkuSuka.Controllers
                 return NotFound();
             }
             _repository.Product.DeleteProduct(product);
+            _repository.Save();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateProduct(Guid id, [FromBody] Product product)
+        {
+            if (product.IsObjectNull())
+            {
+                _logger.LogError("Product object sent from client is null.");
+                return BadRequest("Product object is null");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid product object sent from client.");
+                return BadRequest("Invalid model object");
+            }
+
+            var dbProduct = _repository.Product.GetProductById(id);
+            if (dbProduct.IsEmptyObject())
+            {
+                _logger.LogError($"Product with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+
+            _repository.Product.UpdateProduct(dbProduct, product);
             _repository.Save();
 
             return NoContent();

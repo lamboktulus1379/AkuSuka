@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Extensions;
 using Entities.Helpers;
 using Entities.Models;
 using System;
@@ -50,6 +51,12 @@ namespace Repository
         public void DeleteProduct(Product product)
         {
             Delete(product);
+        }
+
+        public void UpdateProduct(Product dbProduct, Product product)
+        {
+            dbProduct.Map(product);
+            Update(product);
         }
     }
 }
