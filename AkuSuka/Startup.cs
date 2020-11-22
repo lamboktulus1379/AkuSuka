@@ -44,6 +44,8 @@ namespace AkuSuka
 
             services.ConfigureRepositoryWrapper();
 
+            services.AddJwtAuthentication();
+
             services.AddControllers(config =>
             {
                 config.RespectBrowserAcceptHeader = true;
@@ -83,6 +85,8 @@ namespace AkuSuka
             });
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

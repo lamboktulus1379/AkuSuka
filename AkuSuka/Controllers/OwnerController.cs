@@ -5,6 +5,7 @@ using Entities.DataTransferObjects;
 using Entities.Extensions;
 using Entities.Helpers;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Net.Http.Headers;
@@ -32,7 +33,7 @@ namespace AkuSuka.Controllers
             _linkGenerator = linkGenerator;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public IActionResult GetOwners([FromQuery] OwnerParameters ownerParameters)
         {
