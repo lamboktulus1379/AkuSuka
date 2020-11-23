@@ -42,6 +42,8 @@ namespace AkuSuka
 
             services.ConfigureMySqlContext(Configuration);
 
+            services.ConfigureTokenService();
+
             services.ConfigureRepositoryWrapper();
 
             services.AddJwtAuthentication();

@@ -17,6 +17,7 @@ using Repository;
 using System;
 using System.Linq;
 using System.Text;
+using TokenManager;
 
 namespace AkuSuka.Extensions
 {
@@ -44,6 +45,11 @@ namespace AkuSuka.Extensions
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
+        }
+
+        public static void ConfigureTokenService(this IServiceCollection services)
+        {
+            services.AddTransient<ITokenService, TokenService>();
         }
 
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entiti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{2778652E-48F3-4887-84D6-C4495636A4B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenManager", "TokenService\TokenManager.csproj", "{DA122969-56FD-40DD-826B-A14846914353}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{2778652E-48F3-4887-84D6-C4495636A4B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2778652E-48F3-4887-84D6-C4495636A4B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2778652E-48F3-4887-84D6-C4495636A4B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA122969-56FD-40DD-826B-A14846914353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA122969-56FD-40DD-826B-A14846914353}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA122969-56FD-40DD-826B-A14846914353}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA122969-56FD-40DD-826B-A14846914353}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

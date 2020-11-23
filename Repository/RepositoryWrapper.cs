@@ -11,6 +11,7 @@ namespace Repository
         private IOwnerRepository _owner;
         private IAccountRepository _account;
         private IProductRepository _product;
+        private IUserRepository _user;
         private ISortHelper<Owner> _ownerSortHelper;
         private ISortHelper<Account> _accountSortHelper;
         private readonly ISortHelper<Product> _productSortHelper;
@@ -49,6 +50,18 @@ namespace Repository
                     _product = new ProductRepository(_repoContext, _productSortHelper, _productDataShaper); 
                 }
                 return _product;
+            }
+        }
+
+        public IUserRepository User
+        {
+            get
+            {
+                if (_user == null)
+                {
+                    _user = new UserRepository(_repoContext);
+                }
+                return _user;
             }
         }
         public RepositoryWrapper(RepositoryContext repositoryContext, 

@@ -11,6 +11,8 @@ using System.Text;
 using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Repository;
+using Contracts;
 
 namespace AkuSuka.Controllers
 {
@@ -18,33 +20,47 @@ namespace AkuSuka.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        [HttpPost, Route("login")]
-        public IActionResult Login([FromBody] User user)
+        private readonly IRepositoryWrapper _repository;
+        private readonly ITokenService _tokenService;
+
+        public AuthController(IRepositoryWrapper repository, ITokenService tokenService)
         {
-            if (user == null)
+            _repository = repository;
+            _tokenService = tokenService;
+        }
+        [HttpPost, Route("login")]
+        public IActionResult Login([FromBody] User dbUser)
+        {
+            if (dbUser == null)
             {
                 return BadRequest("Invalid client request");
             }
-            if (user.Username == "lamboktulus1379" && user.Password == "gra0307")
-            {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("I was wandering what if the best I could do for may day to day"));
-                var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
-
-                var tokenOptions = new JwtSecurityToken
-                (
-                    issuer: "http://localhost:5000",
-                    audience: "http://localhost:5000",
-                    claims: new List<Claim>(),
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signinCredentials
-                );
-
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new { token = tokenString });
-            } else
+            User user = _repository.User.CheckUser(dbUser.Username, dbUser.Password);   
+            if (user == null)
             {
                 return Unauthorized();
             }
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, dbUser.Username),
+                new Claim(ClaimTypes.Role, "Owner")
+            };
+
+            var accessToken = _tokenService.GenerateAccessToken(claims);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.Now.AddDays(7);
+
+            _repository.User.UpdateUser(user);
+
+            _repository.Save();
+
+            return Ok(new
+            {
+                Token = accessToken,
+                RefreshToken = refreshToken
+            });
         }
     }
 }

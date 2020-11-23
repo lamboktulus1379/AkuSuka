@@ -33,7 +33,7 @@ namespace AkuSuka.Controllers
             _linkGenerator = linkGenerator;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet, Authorize(Roles = "Owner")]
         [ServiceFilter(typeof(ValidateMediaTypeAttribute))]
         public IActionResult GetOwners([FromQuery] OwnerParameters ownerParameters)
         {

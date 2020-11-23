@@ -1,4 +1,5 @@
-﻿using Entities.Models;
+﻿using Entities.Configuration;
+using Entities.Models;
 using Microsoft.EntityFrameworkCore;
 namespace Entities
 {
@@ -12,5 +13,13 @@ namespace Entities
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; }
+
+        #region Required
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UserConfiguration());
+        }
+        #endregion
     }
 }
