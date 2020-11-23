@@ -36,7 +36,8 @@ namespace Repository
 
         public ShapedEntity GetProductById(Guid productId, string fields)
         {
-            var product = FindByCondition(product => product.Id.Equals(productId)).FirstOrDefault();
+            var product = FindByCondition(product => product.Id.Equals(productId))
+                .FirstOrDefault();
 
             return _dataShaper.ShapeData(product, fields);
         }

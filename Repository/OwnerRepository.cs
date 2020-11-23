@@ -52,7 +52,6 @@ namespace Repository
         public ShapedEntity GetOwnerById(Guid ownerId, string fields)
         {
             var owner = FindByCondition(owner => owner.Id.Equals(ownerId))
-                //.DefaultIfEmpty(new Owner())
                 .FirstOrDefault();
 
             return _dataShaper.ShapeData(owner, fields);
@@ -68,7 +67,6 @@ namespace Repository
         public Owner GetOwnerById(Guid ownerId)
         {
             return FindByCondition(owner => owner.Id.Equals(ownerId))
-                .DefaultIfEmpty(new Owner())
                 .FirstOrDefault();
         }
 
